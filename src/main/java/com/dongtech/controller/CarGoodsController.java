@@ -229,23 +229,6 @@ public class CarGoodsController {
         return modelAndView;
     }
 
-    @RequestMapping("/list")
-    public ModelAndView list() {
-
-        /**
-         * 模型和视图
-         * model模型: 模型对象中存放了返回给页面的数据
-         * view视图: 视图对象中指定了返回的页面的位置
-         */
-        ModelAndView modelAndView = new ModelAndView();
-        CarGoods cg = new CarGoods();
-        List<CarGoods> list = queryGoods(cg);
-        modelAndView.addObject("list", list);
-        //指定返回的页面位置
-        modelAndView.setViewName("carGoods/list");
-        return modelAndView;
-    }
-
     /**
      * @Author gzl
      * @Description：查询下单详情列表
