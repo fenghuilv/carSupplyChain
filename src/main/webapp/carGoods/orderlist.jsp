@@ -1,6 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -20,7 +20,24 @@
                     <th width="10%">操作</th>
                     <%--<th width="10%">数量</th>--%>
                 </tr>
-
+                <c:forEach items="${list}" var="item">
+                    <tr>
+                        <td>${item.number}</td>
+                        <td>${item.price}</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/cargoods/queryordersdetails?id=${item.number}">订单详情</a>
+                            <a href="${pageContext.request.contextPath}/cargoods/teardowndetails?orderId=${item.number}">拆单</a>
+                        </td>
+                            <%--<td>${item.produce}</td>--%>
+                            <%--<td>${item.num}</td>--%>
+                            <%--<td>${item.type}</td>--%>
+                            <%--<td>--%>
+                            <%--<a href="${pageContext.request.contextPath}/book/show.action?id=${item.id}">查看</a>--%>
+                            <%--<a href="${pageContext.request.contextPath}/book/queryById.action?id=${item.id}">|修改</a>--%>
+                            <%--<a href="${pageContext.request.contextPath}/book/deleteById.action?id=${item.id}">|删除</a>--%>
+                            <%--</td>--%>
+                    </tr>
+                </c:forEach>
             </table>
         </div>
     </div>

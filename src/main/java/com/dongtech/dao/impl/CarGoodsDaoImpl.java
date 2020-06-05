@@ -6,6 +6,7 @@ import com.dongtech.util.JDBCUtil;
 import com.dongtech.vo.*;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,16 +28,17 @@ public class CarGoodsDaoImpl implements CarGoodsDao {
         List<CarGoods> bookList = new ArrayList<CarGoods>();
         try {
             //1 加载数据库驱动  2 获取数据库连接
-            conn = JDBCUtil.getMysqlConn();
+           // conn = JDBCUtil.getMysqlConn();
+            conn =  JDBCUtil.getMysqlConn();
             StringBuffer sql = new StringBuffer();
             sql.append("SELECT * FROM cargoods where 1=1");
-            if(!StringUtils.isEmpty(carGoods.getId())){
+            if (!StringUtils.isEmpty(carGoods.getId())) {
                 sql.append(" and id =").append(carGoods.getId());
             }
-            if(!StringUtils.isEmpty(carGoods.getName())){
+            if (!StringUtils.isEmpty(carGoods.getName())) {
                 sql.append("  and name like '%").append(carGoods.getName()).append("%'");
             }
-            if(!StringUtils.isEmpty(carGoods.getType())){
+            if (!StringUtils.isEmpty(carGoods.getType())) {
                 sql.append("  and type='").append(carGoods.getType()).append("'");
             }
             //3 操作数据库——查询一条数据记录
@@ -121,8 +123,8 @@ public class CarGoodsDaoImpl implements CarGoodsDao {
             conn = JDBCUtil.getMysqlConn();
             StringBuffer sql = new StringBuffer();
             sql.append("SELECT * FROM car_orders_details where 1=1");
-            if(!StringUtils.isEmpty(id)){
-                sql.append(" and id =").append(id);
+            if (!StringUtils.isEmpty(id)) {
+                sql.append(" and order_id =").append(id);
             }
             //3 操作数据库——查询一条数据记录
             ps = conn.prepareStatement(sql.toString());
@@ -148,10 +150,187 @@ public class CarGoodsDaoImpl implements CarGoodsDao {
         return carOrderDetailsList;
     }
 
+    @Override
+    public void saveOrders(List<Cart> carIncookie) {
+        long randomNum = System.currentTimeMillis() / 1000;
+        saveOrdersDetailsLists(carIncookie, randomNum);
+        saveOrdersLists(carIncookie, randomNum);
+    }
+
+    @Override
+    public ProduceOrderDetails queryOrdersTearDownDetails(CarOrderDetails c) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ProduceOrderDetails produceOrderDetails = null;
+        try {
+            //1 加载数据库驱动  2 获取数据库连接
+            conn = JDBCUtil.getMysqlConn();
+            StringBuffer sql = new StringBuffer();
+            sql.append("SELECT * FROM car_produceOrder_details where 1=1");
+            if (!StringUtils.isEmpty(c.getOrderId())) {
+                sql.append(" and order_id =").append(c.getOrderId());
+            }
+
+            if (!StringUtils.isEmpty(c.getGoodsname())) {
+                sql.append(" and goods_name ='").append(c.getGoodsname()).append("'");
+            }
+
+            if (!StringUtils.isEmpty(c.getProduce())) {
+                sql.append(" and produce ='").append(c.getProduce()).append("'");
+            }
+            //3 操作数据库——查询一条数据记录
+            ps = conn.prepareStatement(sql.toString());
+            rs = ps.executeQuery();
+            //4 处理返回数据——将返回的一条记录封装到一个JavaBean对象
+            while (rs.next()) {
+                produceOrderDetails = new ProduceOrderDetails(rs.getLong("id"),
+                        rs.getInt("order_Id"),
+                        rs.getString("produce"),
+                        rs.getString("goods_name"),
+                        rs.getInt("tot_num"),
+                        rs.getBigDecimal("tot_price")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //5 关闭连接
+            JDBCUtil.close(rs, ps, conn);
+        }
+        return produceOrderDetails;
+    }
+
+    @Override
+    public void updateTearDownDetails(ProduceOrderDetails tdd) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            //1 加载数据库驱动  2 获取数据库连接
+            conn = JDBCUtil.getMysqlConn();
+            String sql = "UPDATE jk_pro_db.car_produceOrder_details set tot_num = ? WHERE id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, tdd.getTot_num());
+            ps.setLong(2, tdd.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //5 关闭连接
+            JDBCUtil.close(rs, ps, conn);
+        }
+    }
+
+    @Override
+    public void saveTearDownDetails(ProduceOrderDetails tdd) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            //1 加载数据库驱动  2 获取数据库连接
+            conn = JDBCUtil.getMysqlConn();
+            String sql = "INSERT INTO jk_pro_db.car_produceOrder_details(id,produce,goods_name, tot_num,tot_price,order_id) values (?,?,?,?,?,?)";
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1,(Long) System.currentTimeMillis() / 1000 );
+            ps.setString(2, tdd.getProduce());
+            ps.setString(3, tdd.getGoods_name());
+            ps.setInt(4, tdd.getTot_num());
+            ps.setBigDecimal(5, tdd.getTot_price());
+            ps.setInt(6, tdd.getOrder_id());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //5 关闭连接
+            JDBCUtil.close(rs, ps, conn);
+        }
+    }
+
+    @Override
+    public List<ProduceOrderDetails> queryOrdersTearDownDetailsByID(Integer id) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ProduceOrderDetails produceOrderDetails = null;
+        List<ProduceOrderDetails> produceOrderDetailsList = new ArrayList<>();
+        try {
+            //1 加载数据库驱动  2 获取数据库连接
+            conn = JDBCUtil.getMysqlConn();
+            StringBuffer sql = new StringBuffer();
+            sql.append("SELECT * FROM car_produceOrder_details where 1=1");
+            if (!StringUtils.isEmpty(id)) {
+                sql.append(" and order_id =").append(id);
+            }
+
+            //3 操作数据库——查询一条数据记录
+            ps = conn.prepareStatement(sql.toString());
+            rs = ps.executeQuery();
+            //4 处理返回数据——将返回的一条记录封装到一个JavaBean对象
+            while (rs.next()) {
+                produceOrderDetails = new ProduceOrderDetails(rs.getLong("id"),
+                        rs.getInt("order_Id"),
+                        rs.getString("produce"),
+                        rs.getString("goods_name"),
+                        rs.getInt("tot_num"),
+                        rs.getBigDecimal("tot_price")
+                );
+                produceOrderDetailsList.add(produceOrderDetails);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //5 关闭连接
+            JDBCUtil.close(rs, ps, conn);
+        }
+        return produceOrderDetailsList;
+
+    }
+
+    private void saveOrdersLists(List<Cart> carIncookieLists, long randomNum) {
+        int price = 0;
+        for (Cart carIncookie : carIncookieLists) {
+            price += carIncookie.getPrice() * carIncookie.getNum();
+        }
+        saveOrder(price, randomNum);
+    }
+
+    private void saveOrdersDetailsLists(List<Cart> carIncookieLists, long randomNum) {
+        for (Cart carIncookie : carIncookieLists) {
+            saveOrdersDetails(carIncookie.getName(), carIncookie.getNum(), carIncookie.getProduce(), carIncookie.getPrice(), (int) randomNum);
+        }
+    }
 
 
+    public void saveOrdersDetails(String goods_name, int num, String produce, int price, int order_id) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            //1 加载数据库驱动  2 获取数据库连接
+            conn = JDBCUtil.getMysqlConn();
 
-    public void saveOrdersDetails(String goods_name,int num,String produce ,int order_id) {
+            final int[] totalprice = {0};
+            String sql = "INSERT INTO jk_pro_db.car_orders_details(goods_name, num,produce,price,order_id,id) values (?,?,?,?,?,?)";
+            ps = conn.prepareStatement(sql);
+            long randomNum = System.currentTimeMillis();
+            ps.setString(1, goods_name);
+            ps.setInt(2, num);
+            ps.setString(3, produce);
+            ps.setInt(4, price);
+            ps.setInt(5, order_id);
+            ps.setInt(6, (int) randomNum);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //5 关闭连接
+            JDBCUtil.close(rs, ps, conn);
+        }
+    }
+
+
+    public void saveOrder(int price, long randomNum) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -159,14 +338,13 @@ public class CarGoodsDaoImpl implements CarGoodsDao {
             //1 加载数据库驱动  2 获取数据库连接
             conn = JDBCUtil.getMysqlConn();
             final int[] totalprice = {0};
-                String sql = "INSERT INTO jk_pro_db.car_orders_details(goods_name, num,produce,order_id) values (?,?,?,?)";
-                ps = conn.prepareStatement(sql);
-                long randomNum = System.currentTimeMillis();
-                ps.setString(1, goods_name);
-                ps.setInt(2,num);
-                ps.setString(3, produce);
-                ps.setInt(4,order_id);
-                ps.executeUpdate();
+            String sql = "INSERT INTO jk_pro_db.car_orders(number, price,id) values (?,?,?)";
+            ps = conn.prepareStatement(sql);
+//            long randomNum = System.currentTimeMillis();
+            ps.setString(1, String.valueOf(randomNum));
+            ps.setBigDecimal(2, BigDecimal.valueOf(price));
+            ps.setBigDecimal(3, BigDecimal.valueOf(randomNum));
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

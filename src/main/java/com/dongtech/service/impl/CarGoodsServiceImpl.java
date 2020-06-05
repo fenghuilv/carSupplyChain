@@ -31,6 +31,47 @@ public class CarGoodsServiceImpl implements CarVGoodsService {
         return dao.queryOrdersDetails(id);
     }
 
+    @Override
+    public List<ProduceOrderDetails> getProduceOrderDetails(Integer id) {
+         List<CarOrderDetails> list = this.queryOrdersDetails(id);
 
+        // 根据明细进行生产订单分拆，判断存在则更新，不存在则拆单插入
+        for(CarOrderDetails c:list){
+            ProduceOrderDetails tdd = dao.queryOrdersTearDownDetails(c);
+            if(tdd !=null){
+                tdd.setTot_num(c.getNum());
+                dao.updateTearDownDetails(tdd);
+            }else {
+                ProduceOrderDetails t = new ProduceOrderDetails();
+                t.setTot_num(c.getNum());
+                t.setGoods_name(c.getGoodsname());
+                t.setOrder_id(c.getOrderId());
+                t.setProduce(c.getProduce());
+                t.setTot_price(c.getPrice());
+                dao.saveTearDownDetails(t);
+            }
+        }
+        List<ProduceOrderDetails>  listProduceOrderDetails = dao.queryOrdersTearDownDetailsByID(id);
+        return listProduceOrderDetails;
+    }
 
+    @Override
+    public void saveOrders(List<Cart> carIncookie) {
+        dao.saveOrders(carIncookie);
+    }
+
+    @Override
+    public ProduceOrderDetails queryOrdersTearDownDetails(CarOrderDetails c) {
+        return dao.queryOrdersTearDownDetails(c);
+    }
+
+    @Override
+    public void updateTearDownDetails(ProduceOrderDetails tdd) {
+        dao.updateTearDownDetails(tdd);
+    }
+
+    @Override
+    public void saveTearDownDetails(ProduceOrderDetails tdd) {
+        dao.saveTearDownDetails(tdd);
+    }
 }

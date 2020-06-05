@@ -1,6 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -12,8 +12,10 @@
 <body>
 <div class="w">
     <header>
-        <a href="${pageContext.request.contextPath }/cargoods/getCart" >
-            <input type="button" οnclick="javascrtpt:window.location.href='${pageContext.request.contextPath}/cargoods/getCart'" value="我的购物车" class="btn">
+        <a href="${pageContext.request.contextPath }/cargoods/getCart">
+            <input type="button"
+                   onclick="javascrtpt:window.location.href='${pageContext.request.contextPath}/cargoods/getCart'"
+                   value="我的购物车" class="btn">
         </a>
     </header>
     <div class="list">
@@ -26,7 +28,21 @@
                     <th width="10%">生产商</th>
                     <th width="9%">操作</th>
                 </tr>
-
+                <c:forEach items="${list}" var="item">
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.description}</td>
+                        <td>${item.price}</td>
+                        <td>${item.produce}</td>
+                            <%--<td>${item.type}</td>--%>
+                            <%--<td>--%>
+                        <td><a href="${pageContext.request.contextPath}/cargoods/addGoodsToCart?goodsId=${item.id}">添加购物车</a>
+                        </td>
+                            <%--<a href="${pageContext.request.contextPath}/book/queryById.action?id=${item.id}">|修改</a>--%>
+                            <%--<a href="${pageContext.request.contextPath}/book/deleteById.action?id=${item.id}">|删除</a>--%>
+                            <%--</td>--%>
+                    </tr>
+                </c:forEach>
             </table>
         </div>
     </div>

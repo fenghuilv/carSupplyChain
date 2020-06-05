@@ -12,7 +12,7 @@
 <body>
 <div class="w">
     <header>
-        <span>订单详情<span>
+        <span>工厂生产订单</span>
         <a href="${pageContext.request.contextPath }/cargoods/returnView?viewname=orderlist">
             <input type="button"
                    onclick="javascrtpt:window.location.href='${pageContext.request.contextPath}/cargoods/returnView?viewname=orderlist'"
@@ -23,17 +23,19 @@
         <div class="list-bd">
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr>
-                    <th width="5%">名称</th>
+                    <th width="8%">工厂名称</th>
+                    <th width="10%">货物名称</th>
                     <th width="5%">数量</th>
-                    <th width="5%">生产地</th>
                     <th width="5%">价格</th>
+                    <th width="8%">客户订单号</th>
                 </tr>
                 <c:forEach items="${list}" var="item">
                     <tr>
-                        <td>${item.goodsname}</td>
-                        <td>${item.num}</td>
                         <td>${item.produce}</td>
-                        <td>${item.price}</td>
+                        <td>${item.goods_name}</td>
+                        <td>${item.tot_num}</td>
+                        <td>${item.tot_price}</td>
+                        <td>${item.order_id}</td>
                             <%--<td>${item.type}</td>--%>
                             <%--<td>--%>
                             <%--<td><a href="${pageContext.request.contextPath}/cargoods/addGoodsToCart?goodsId=${item.id}">添加购物车</a>--%>

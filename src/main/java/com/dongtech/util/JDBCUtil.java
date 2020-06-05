@@ -1,5 +1,7 @@
 package com.dongtech.util;
 
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
@@ -9,22 +11,45 @@ import java.util.Properties;
  */
 public class JDBCUtil {
 
+    static Properties pros = null;   //可以帮助读取和处理资源文件中的信息
+
+    static {   //加载JDBCUtil类的时候调用
+        pros = new Properties();
+        try {
+            pros.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // 建立MySQL连接
     public static Connection getMysqlConn(){
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3307/jk_pro_db?serverTimezone=UTC",
-                    "root","103147");
+            Class.forName(pros.getProperty("mysqlDriver"));
+            return DriverManager.getConnection(pros.getProperty("mysqlURL"),
+                    pros.getProperty("mysqlUser"),pros.getProperty("mysqlPwd"));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static void main(String[] args) {
-        getMysqlConn();
-    }
+
+//    // 建立MySQL连接
+//    public static Connection getMysqlConn(){
+//        try {
+//            Class.forName("com.mysql.jdbc.Driver");
+//            return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3307/jk_pro_db?serverTimezone=UTC",
+//                    "root","103147");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
+//    public static void main(String[] args) {
+//        getMysqlConn();
+//    }
 
     //关闭连接3
     public static void close(ResultSet rs,Statement ps,Connection conn){
