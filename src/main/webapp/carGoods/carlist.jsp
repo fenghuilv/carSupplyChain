@@ -18,6 +18,11 @@
                    onclick="javascrtpt:window.location.href='${pageContext.request.contextPath}/cargoods/returnView?viewname=list'"
                    value="返回" class="btn">
         </a>
+        <a href="${pageContext.request.contextPath }/cargoods/clearcar">
+            <input type="button"
+                   onclick="javascrtpt:window.location.href='${pageContext.request.contextPath}/cargoods/clearcar'"
+                   value="清空" class="btn">
+        </a>
         <a href="${pageContext.request.contextPath }/cargoods/addorders">
             <input type="button"
                    onclick="javascrtpt:window.location.href='${pageContext.request.contextPath}/cargoods/addorders'"
@@ -36,6 +41,7 @@
                     <th width="10%">描述</th>
                     <%--<th width="12%">出厂地址</th>--%>
                     <th width="10%">数量</th>
+<%--                    <th width="10%">操作</th>--%>
                 </tr>
                 <c:forEach items="${list}" var="item">
                     <tr>
@@ -45,11 +51,9 @@
                             <%--<td>${item.produce}</td>--%>
                         <td>${item.num}</td>
                             <%--<td>${item.type}</td>--%>
-                            <%--<td>--%>
-                            <%--<a href="${pageContext.request.contextPath}/book/show.action?id=${item.id}">查看</a>--%>
-                            <%--<a href="${pageContext.request.contextPath}/book/queryById.action?id=${item.id}">|修改</a>--%>
-                            <%--<a href="${pageContext.request.contextPath}/book/deleteById.action?id=${item.id}">|删除</a>--%>
-                            <%--</td>--%>
+<%--                            <td>--%>
+<%--                            <a href="${pageContext.request.contextPath}/book/deleteById.action?id=${item.id}">|删除</a>--%>
+<%--                            </td>--%>
                     </tr>
                 </c:forEach>
             </table>

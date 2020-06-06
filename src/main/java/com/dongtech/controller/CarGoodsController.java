@@ -83,21 +83,47 @@ public class CarGoodsController {
         return modelAndView;
     }
 
+    @RequestMapping("/clearcar")
+    public ModelAndView clearcar(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+        //下单之后清除购物车cookie
+        Cookie cookie = getCookie(request);
+        if(cookie !=null) {
+            cookie.setMaxAge(0);//设置cookie有效时间为0
+            cookie.setPath("/"); //不设置存储路径
+            response.addCookie(cookie);
+        }
 
-    /**
-     * @Author gb
-     * @Description：下单购物车商品列表
-     * @Exception
-     */
+
+        ModelAndView modelAndView = new ModelAndView();
+        //将返回给页面的数据放入模型和视图对象中
+        List<CarGoods> list = new ArrayList<>();
+
+        modelAndView.addObject("list", list);
+        //指定返回的页面位置
+        modelAndView.setViewName("carGoods/list");
+
+        return modelAndView;
+    }
+
+
+        /**
+         * @Author gb
+         * @Description：下单购物车商品列表
+         * @Exception
+         */
     @RequestMapping("/addorders")
     public ModelAndView addorders(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         List<Cart> carIncookie = getCartInCookie(response, request);
-        carVGoodsService.saveOrders(carIncookie);
+        if(carIncookie != null && carIncookie.size()>0) {
+            carVGoodsService.saveOrders(carIncookie);
+        }
 
         //下单之后清除购物车cookie
         Cookie cookie = getCookie(request);
-        cookie.setMaxAge(0);//设置cookie有效时间为0
-        cookie.setPath("/");//不设置存储路径
+        if(cookie !=null) {
+            cookie.setMaxAge(0);//设置cookie有效时间为0
+            cookie.setPath("/"); //不设置存储路径
+        }
         response.addCookie(cookie);
 
         /**
