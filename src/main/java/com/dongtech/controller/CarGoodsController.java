@@ -83,11 +83,14 @@ public class CarGoodsController {
         return modelAndView;
     }
 
+    /**
+     * 应对购物车右上清空按钮事件
+     */
     @RequestMapping("/clearcar")
     public ModelAndView clearcar(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         //下单之后清除购物车cookie
         Cookie cookie = getCookie(request);
-        if(cookie !=null) {
+        if (cookie != null) {
             cookie.setMaxAge(0);//设置cookie有效时间为0
             cookie.setPath("/"); //不设置存储路径
             response.addCookie(cookie);
@@ -106,21 +109,21 @@ public class CarGoodsController {
     }
 
 
-        /**
-         * @Author gb
-         * @Description：下单购物车商品列表
-         * @Exception
-         */
+    /**
+     * @Author gb
+     * @Description：下单购物车商品列表
+     * @Exception
+     */
     @RequestMapping("/addorders")
     public ModelAndView addorders(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         List<Cart> carIncookie = getCartInCookie(response, request);
-        if(carIncookie != null && carIncookie.size()>0) {
+        if (carIncookie != null && carIncookie.size() > 0) {
             carVGoodsService.saveOrders(carIncookie);
         }
 
         //下单之后清除购物车cookie
         Cookie cookie = getCookie(request);
-        if(cookie !=null) {
+        if (cookie != null) {
             cookie.setMaxAge(0);//设置cookie有效时间为0
             cookie.setPath("/"); //不设置存储路径
         }
@@ -145,6 +148,43 @@ public class CarGoodsController {
         modelAndView.setViewName("carGoods/list");
         CarGoods carGoods = new CarGoods();
         return queryList(carGoods);
+    }
+
+    /***
+     * 删除购物车单件商品
+     */
+    @RequestMapping("/delGoodsFromCart")
+    public ModelAndView delGoodsFromCart(@RequestParam Long goodsId, HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+        // 获取购物车商品信息，匹配后从list中删除
+        List<Cart> cartList = this.getCartInCookie(response,request);
+        for (Cart cart:cartList) {
+            if(cart.getId() == goodsId){
+                cartList.remove(cart);
+                break;
+            }
+        }
+        if(cartList != null && cartList.size()>0){
+        String cookieValue = makeCookieValue(cartList);
+        //将更新后的数据，从新存入cookie中
+        Cookie cookie = this.getCookie(request);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 30);
+        cookie.setValue(URLEncoder.encode(cookieValue));
+        response.addCookie(cookie);
+        }else{
+            Cookie cookie = this.getCookie(request);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
+
+        ModelAndView modelAndView = new ModelAndView();
+        //将返回给页面的数据放入模型和视图对象中
+        modelAndView.addObject("list", cartList);
+        //指定返回的页面位置
+        modelAndView.setViewName("carGoods/carlist");
+        return modelAndView;
+
     }
 
 
@@ -222,7 +262,7 @@ public class CarGoodsController {
             cookie_2st.setValue(URLEncoder.encode(makeCookieValue(cartVos)));
             response.addCookie(cookie_2st);
         }
-       // return cartVos.toString();
+        // return cartVos.toString();
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("carGoods/list");
         CarGoods cg = new CarGoods();
@@ -310,19 +350,21 @@ public class CarGoodsController {
     @RequestMapping("/returnView")
     public ModelAndView returnView(@RequestParam String viewname) {
 
-         if("".equals(viewname)){viewname="list";}
+        if ("".equals(viewname)) {
+            viewname = "list";
+        }
         ModelAndView modelAndView = new ModelAndView();
 
 
-        if("list".equals(viewname)){
+        if ("list".equals(viewname)) {
             CarGoods cg = new CarGoods();
-           List<CarGoods> list = queryGoods(cg);
+            List<CarGoods> list = queryGoods(cg);
             modelAndView.addObject("list", list);
             modelAndView.setViewName("carGoods/list");
             return modelAndView;
         }
 
-        if("orderlist".equals(viewname)){
+        if ("orderlist".equals(viewname)) {
             List<CarOrders> list = queryAllOrders();
             modelAndView.addObject("list", list);
             modelAndView.setViewName("carGoods/orderlist");
@@ -331,7 +373,7 @@ public class CarGoodsController {
 
 
         //指定返回的页面位置
-       return null;
+        return null;
 
     }
 
@@ -415,22 +457,22 @@ public class CarGoodsController {
         return buffer_2st.toString().substring(0, buffer_2st.toString().length() - 2);
     }
 
-     //查询购物车明细
-    public List<CarGoods>  queryGoods(CarGoods carGoods){
+    //查询购物车明细
+    public List<CarGoods> queryGoods(CarGoods carGoods) {
         List<CarGoods> list = new ArrayList<>();
         try {
             list = carVGoodsService.queryList(carGoods);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return  list;
+        return list;
 
     }
 
     //查询所有订单
-    public List<CarOrders>  queryAllOrders(){
+    public List<CarOrders> queryAllOrders() {
         List<CarOrders> list = carVGoodsService.queryOrders();
-        return  list;
+        return list;
 
     }
 }

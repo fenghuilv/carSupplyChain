@@ -41,7 +41,7 @@
                     <th width="10%">描述</th>
                     <%--<th width="12%">出厂地址</th>--%>
                     <th width="10%">数量</th>
-<%--                    <th width="10%">操作</th>--%>
+                    <th width="10%">操作</th>
                 </tr>
                 <c:forEach items="${list}" var="item">
                     <tr>
@@ -51,9 +51,9 @@
                             <%--<td>${item.produce}</td>--%>
                         <td>${item.num}</td>
                             <%--<td>${item.type}</td>--%>
-<%--                            <td>--%>
-<%--                            <a href="${pageContext.request.contextPath}/book/deleteById.action?id=${item.id}">|删除</a>--%>
-<%--                            </td>--%>
+                            <td>
+                            <a href="${pageContext.request.contextPath}/cargoods/delGoodsFromCart?goodsId=${item.id}">删除</a>
+                            </td>
                     </tr>
                 </c:forEach>
             </table>
