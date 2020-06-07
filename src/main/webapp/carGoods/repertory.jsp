@@ -11,6 +11,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <title>第一个 ECharts 实例</title>
     <!-- 引入 echarts.js -->
     <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/jquery-1.8.2.min.js"></script>
 </head>
 <body>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
@@ -18,31 +19,51 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <div id="main1" style="width: 600px;height:400px;"></div>
 <script type="text/javascript">
+
+
+
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
 
-    // 指定图表的配置项和数据
-    var option = {
-        title: {
-            text: '第一个 ECharts 实例'
-        },
-        tooltip: {},
-        legend: {
-            data:['销量']
-        },
-        xAxis: {
-            data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-        },
-        yAxis: {},
-        series: [{
-            name: '销量',
-            type: 'bar',
-            data: [5, 20, 36, 10, 10, 20]
-        }]
-    };
+    //柱状图数据请求
+    $.ajax({
+        type: 'GET',
+        url: "${pageContext.request.contextPath }/cargoods/barData",
+        dataType: "json",
+        global: false,
+        success: function (json) {
+            console.log("接口返回值",json);
+            debugger;
+            var option = {
+                title: {
+                    text: json.title
+                },
+                tooltip: {},
+                legend: {
+                    data:json.legendData
+                },
+                xAxis: {
+                    name: json.legendData,
+                    data: json.xData
+                },
+                yAxis: {
+                    name: json.name,
+                },
+                series: [{
+                    name: json.name,
+                    type: 'bar',
+                    data: json.serieData
+                }]
+            };
 
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+        } ,
+    });
+
+    // 指定图表的配置项和数据
+
 
 
     var myChart = echarts.init(document.getElementById('main1'));

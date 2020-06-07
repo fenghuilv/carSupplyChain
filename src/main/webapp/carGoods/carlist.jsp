@@ -51,9 +51,9 @@
                             <%--<td>${item.produce}</td>--%>
                         <td>${item.num}</td>
                             <%--<td>${item.type}</td>--%>
-                            <td>
+                        <td>
                             <a href="${pageContext.request.contextPath}/cargoods/delGoodsFromCart?goodsId=${item.id}">删除</a>
-                            </td>
+                        </td>
                     </tr>
                 </c:forEach>
             </table>
